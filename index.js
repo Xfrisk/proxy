@@ -1,11 +1,19 @@
 const express = require('express');
 const axios = require('axios');
+const rateLimit = require('express-rate-limit');
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.post('/api/webhooks/:webhookId/:webhookToken', async (req, res) => {
+const webhookRateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 29,
+    message: { error: 'Too many requests. Please try again later.' },
+    statusCode: 429,
+});
+
+app.post('/api/webhooks/:webhookId/:webhookToken', webhookRateLimiter, async (req, res) => {
     const discordWebhookUrl = `https://discord.com/api/webhooks/${req.params.webhookId}/${req.params.webhookToken}`;
 
     try {
