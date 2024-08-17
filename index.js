@@ -7,6 +7,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+app.set('trust proxy', 1);
+
 const webhookQueue = new Queue('webhookQueue', 'redis://127.0.0.1:6379');
 
 const webhookRateLimiter = rateLimit({
@@ -24,6 +26,7 @@ const webhookRateLimiter = rateLimit({
     }
 });
 
+// Processa mensagens na fila
 webhookQueue.process(async (job) => {
     const { webhookId, webhookToken, body } = job.data;
     const discordWebhookUrl = `https://discord.com/api/webhooks/${webhookId}/${webhookToken}`;
