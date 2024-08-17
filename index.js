@@ -6,9 +6,11 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+app.set('trust proxy', 1);
+
 const webhookRateLimiter = rateLimit({
     windowMs: 60 * 1000,
-    max: 29,
+    max: 25,
     message: { error: 'Too many requests. Please try again later.' },
     statusCode: 429,
 });
